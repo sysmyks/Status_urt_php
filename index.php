@@ -199,6 +199,57 @@ if (!file_exists(__DIR__ . '/' . $mapImageUrl)) {
                 margin-bottom: 10px;
             }
         }
+
+        .all-records {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .records-table th,
+        .records-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .records-table th {
+            background-color: #f8f8f8;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .records-table tr:hover {
+            background-color: #f8f8f8;
+        }
+
+        .all-records h2 {
+            color: #333;
+            margin: 0 0 15px 0;
+            font-size: 20px;
+        }
+
+        .best-time {
+            background-color: #fff3dc;
+        }
+
+        .best-time td {
+            font-weight: bold;
+        }
+
+        .all-records h3 {
+            margin: 20px 0 10px 0;
+            color: #666;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -244,12 +295,15 @@ if (!file_exists(__DIR__ . '/' . $mapImageUrl)) {
                     <div class="info-value"><?php echo htmlspecialchars($mapInfo['jumps'] ?? '0'); ?></div>
                 </div>
                 <?php endif; ?>
-                <?php if ($mapRecord): ?>
-                <div class="info-item record">
-                    <div class="info-label">Meilleur temps</div>
-                    <div class="info-value"><?php echo htmlspecialchars($mapRecord['time']); ?>s par <?php echo htmlspecialchars($mapRecord['player']); ?></div>
-                </div>
-                <?php endif; ?>
+                <!-- Remplacer la section des records dans l'info-grid -->
+<?php if ($mapRecord && isset($mapRecord['best'])): ?>
+    <?php foreach ($mapRecord['best'] as $way => $record): ?>
+    <div class="info-item record">
+        <div class="info-label">Record Way <?php echo htmlspecialchars($way); ?></div>
+        <div class="info-value"><?php echo htmlspecialchars($record['time']); ?>s par <?php echo htmlspecialchars($record['player']); ?></div>
+    </div>
+    <?php endforeach; ?>
+<?php endif; ?>
             </div>
             <?php if (!empty($formattedStatus['players_list'])): ?>
             <div class="players-list">
@@ -262,6 +316,33 @@ if (!file_exists(__DIR__ . '/' . $mapImageUrl)) {
                 <?php endforeach; ?>
             </div>
             <?php endif; ?>
+            <!-- Remplacer la section "Tous les records" -->
+<?php if ($mapRecord && isset($mapRecord['all'])): ?>
+<div class="all-records">
+    <h2>Tous les records de la map</h2>
+    <?php foreach ($mapRecord['all'] as $way => $records): ?>
+        <h3>Way <?php echo htmlspecialchars($way); ?></h3>
+        <table class="records-table">
+            <thead>
+                <tr>
+                    <th>Position</th>
+                    <th>Joueur</th>
+                    <th>Temps</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($records as $index => $record): ?>
+                <tr <?php echo $index === 0 ? 'class="best-time"' : ''; ?>>
+                    <td>#<?php echo $index + 1; ?></td>
+                    <td><?php echo htmlspecialchars($record['player']); ?></td>
+                    <td><?php echo htmlspecialchars($record['time']); ?>s</td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
         </div>
     </div>
 </body>
