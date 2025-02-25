@@ -18,9 +18,3 @@ Un moniteur de serveur web en PHP pour Urban Terror, permettant d'afficher en te
 - Extension PHP ZIP
 - Serveur web (Apache/Nginx)
 - Accès au serveur Urban Terror via UDP
-
-## 🛠️ Installation
-
-1. Clonez le dépôt :
-```bash
-git clone https://github.com/votre-username/votre-repo.git
