@@ -31,36 +31,65 @@ class MapDataManager {
             $recordsData = json_decode(file_get_contents($this->recordsFile), true);
             if (isset($recordsData[$mapName])) {
                 $records = $recordsData[$mapName];
-                $bestTime = PHP_FLOAT_MAX;
-                $bestPlayer = '';
+                $wayRecords = [];
+                $allRecords = [];
                 
+                // Organiser tous les records par way
                 foreach ($records as $player => $attempts) {
-                    foreach ($attempts as $time) {
-                        if ($time < $bestTime) {
-                            $bestTime = $time;
-                            $bestPlayer = $player;
+                    foreach ($attempts as $way => $time) {
+                        // Pour garder le meilleur temps par way
+                        if (!isset($wayRecords[$way]) || $time < $wayRecords[$way]['raw_time']) {
+                            $totalSeconds = $time / 1000;
+                            $minutes = floor($totalSeconds / 60);
+                            $remainingSeconds = $totalSeconds - ($minutes * 60);
+                            
+                            $timeFormatted = $minutes > 0 
+                                ? sprintf("%d:%06.3f", $minutes, $remainingSeconds)
+                                : sprintf("%06.3f", $remainingSeconds);
+                            
+                            $wayRecords[$way] = [
+                                'time' => $timeFormatted,
+                                'player' => $player,
+                                'raw_time' => $time,
+                                'way' => $way
+                            ];
                         }
+                        
+                        // Pour garder tous les temps de tous les joueurs
+                        if (!isset($allRecords[$way])) {
+                            $allRecords[$way] = [];
+                        }
+                        
+                        $totalSeconds = $time / 1000;
+                        $minutes = floor($totalSeconds / 60);
+                        $remainingSeconds = $totalSeconds - ($minutes * 60);
+                        
+                        $timeFormatted = $minutes > 0 
+                            ? sprintf("%d:%06.3f", $minutes, $remainingSeconds)
+                            : sprintf("%06.3f", $remainingSeconds);
+                        
+                        $allRecords[$way][] = [
+                            'time' => $timeFormatted,
+                            'player' => $player,
+                            'raw_time' => $time
+                        ];
                     }
                 }
                 
-                // Conversion du temps
-                $totalSeconds = $bestTime / 1000;
-                $minutes = floor($totalSeconds / 60);
-                $remainingSeconds = $totalSeconds - ($minutes * 60);
-                
-                // Formatage du temps dans le style M:SS.mmm ou SS.mmm
-                if ($minutes > 0) {
-                    // Pour les temps > 1 minute : M:SS.mmm
-                    $timeFormatted = sprintf("%d:%06.3f", $minutes, $remainingSeconds);
-                } else {
-                    // Pour les temps < 1 minute : SS.mmm
-                    $timeFormatted = sprintf("%06.3f", $remainingSeconds);
+                // Trier les records par temps pour chaque way
+                foreach ($allRecords as &$wayTimes) {
+                    usort($wayTimes, function($a, $b) {
+                        return $a['raw_time'] - $b['raw_time'];
+                    });
                 }
                 
+                // Trier par numéro de way
+                ksort($wayRecords);
+                ksort($allRecords);
+                
                 return [
-                    'time' => $timeFormatted,
-                    'player' => $bestPlayer,
-                    'raw_time' => $bestTime
+                    'best' => $wayRecords,
+                    'all' => $allRecords
                 ];
             }
         }
