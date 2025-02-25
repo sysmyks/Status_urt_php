@@ -1,4 +1,3 @@
-# Status_urt_php
 # Urban Terror Server Monitor
 
 Un moniteur de serveur web en PHP pour Urban Terror, permettant d'afficher en temps réel le statut du serveur, les informations sur les maps et les records des joueurs.
