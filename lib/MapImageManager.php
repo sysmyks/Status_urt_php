@@ -35,7 +35,11 @@ class MapImageManager {
                 $zip = new ZipArchive();
                 if ($zip->open($pk3File) === true) {
                     $levelshotJpg = 'levelshots/' . $mapName . '.jpg';
-                    $levelshotTga = 'levelshots/' . $mapName . '.tga';
+                    // Créer un tableau avec les deux possibilités de casse pour .tga
+                    $levelshotTgaVariants = [
+                        'levelshots/' . $mapName . '.tga',
+                        'levelshots/' . $mapName . '.TGA'
+                    ];
                     
                     // D'abord essayer le JPG
                     if ($zip->locateName($levelshotJpg) !== false) {
@@ -45,22 +49,24 @@ class MapImageManager {
                         }
                     }
                     
-                    // Ensuite essayer le TGA
-                    if ($zip->locateName($levelshotTga) !== false) {
-                        $tempDir = $this->localImagesDirectory . DIRECTORY_SEPARATOR . 'temp';
-                        if (!is_dir($tempDir)) {
-                            mkdir($tempDir, 0777, true);
-                        }
-                        
-                        $tempTgaPath = $tempDir . DIRECTORY_SEPARATOR . $levelshotTga;
-                        if ($zip->extractTo($tempDir, $levelshotTga) && file_exists($tempTgaPath)) {
-                            if ($this->convertTgaToJpg($tempTgaPath, $localPath)) {
-                                $zip->close();
-                                $this->cleanupTempDirectories($tempDir);
-                                return 'images/maps/' . $mapName . '.jpg';
+                    // Ensuite essayer les deux variantes de TGA
+                    foreach ($levelshotTgaVariants as $levelshotTga) {
+                        if ($zip->locateName($levelshotTga) !== false) {
+                            $tempDir = $this->localImagesDirectory . DIRECTORY_SEPARATOR . 'temp';
+                            if (!is_dir($tempDir)) {
+                                mkdir($tempDir, 0777, true);
                             }
+                            
+                            $tempTgaPath = $tempDir . DIRECTORY_SEPARATOR . $levelshotTga;
+                            if ($zip->extractTo($tempDir, $levelshotTga) && file_exists($tempTgaPath)) {
+                                if ($this->convertTgaToJpg($tempTgaPath, $localPath)) {
+                                    $zip->close();
+                                    $this->cleanupTempDirectories($tempDir);
+                                    return 'images/maps/' . $mapName . '.jpg';
+                                }
+                            }
+                            $this->cleanupTempDirectories($tempDir);
                         }
-                        $this->cleanupTempDirectories($tempDir);
                     }
                     
                     $zip->close();
