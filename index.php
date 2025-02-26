@@ -319,9 +319,9 @@ if (!file_exists(__DIR__ . '/' . $mapImageUrl)) {
             <!-- Remplacer la section "Tous les records" -->
 <?php if ($mapRecord && isset($mapRecord['all'])): ?>
 <div class="all-records">
-    <h2>Tous les records de la map</h2>
+<div class="info-label">Tous les records de la map</div>
     <?php foreach ($mapRecord['all'] as $way => $records): ?>
-        <h3>Way <?php echo htmlspecialchars($way); ?></h3>
+        <p>Way <?php echo htmlspecialchars($way); ?></p>
         <table class="records-table">
             <thead>
                 <tr>
