@@ -43,6 +43,7 @@ if (!file_exists(__DIR__ . '/' . $mapImageUrl)) {
             padding: 1rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             width: 100%;
+            box-sizing: border-box;
         }
 
         .nav-container {
@@ -306,16 +307,16 @@ if (!file_exists(__DIR__ . '/' . $mapImageUrl)) {
 <?php endif; ?>
             </div>
             <?php if (!empty($formattedStatus['players_list'])): ?>
-            <div class="players-list">
-                <div class="info-label">Joueurs connectés (<?php echo count($formattedStatus['players_list']); ?>)</div>
-                <?php foreach ($formattedStatus['players_list'] as $player): ?>
-                <div class="player-item">
-                    <span class="player-name"><?php echo $player['name']; ?></span>
-                    <span class="player-ping"><?php echo $player['ping']; ?> ms</span>
-                </div>
-                <?php endforeach; ?>
-            </div>
-            <?php endif; ?>
+<div class="players-list">
+    <div class="info-label">Joueurs connectés (<?php echo count($formattedStatus['players_list']); ?>)</div>
+    <?php foreach ($formattedStatus['players_list'] as $player): ?>
+    <div class="player-item">
+        <span class="player-name"><?php echo $player['name']; // Suppression de htmlspecialchars ?></span>
+        <span class="player-ping"><?php echo $player['ping']; ?> ms</span>
+    </div>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
             <!-- Remplacer la section "Tous les records" -->
 <?php if ($mapRecord && isset($mapRecord['all'])): ?>
 <div class="all-records">
