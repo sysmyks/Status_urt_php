@@ -32,7 +32,7 @@ class StatusParser {
                 $result['players_list'][] = [
                     'score' => $matches[1],
                     'ping' => $matches[2],
-                    'name' => $matches[3]
+                    'name' => $this->convertColorCodes($matches[3]) // Ajout de la conversion des codes couleur
                 ];
             }
         }
