@@ -20,10 +20,38 @@ class MapDataManager {
                 if (is_array($mapInfo['difficulty'])) {
                     $mapInfo['difficulty'] = $mapInfo['difficulty'][0];
                 }
+                
+                // Traitement de l'URL YouTube si elle existe
+                if (isset($mapInfo['youtube_url']) && !empty($mapInfo['youtube_url'])) {
+                    $mapInfo['youtube_embed_id'] = $this->extractYoutubeId($mapInfo['youtube_url']);
+                }
             }
         }
 
         return $mapInfo;
+    }
+    
+    /**
+     * Extrait l'ID de la vidéo YouTube à partir de l'URL
+     * 
+     * @param string $url L'URL YouTube
+     * @return string|null L'ID de la vidéo ou null si non trouvé
+     */
+    private function extractYoutubeId($url) {
+        // Format https://www.youtube.com/watch?v=VIDEO_ID
+        if (preg_match('/[?&]v=([^&]+)/', $url, $matches)) {
+            return $matches[1];
+        }
+        // Format https://youtu.be/VIDEO_ID
+        else if (preg_match('/youtu\.be\/([^?&]+)/', $url, $matches)) {
+            return $matches[1];
+        }
+        // Format https://www.youtube.com/embed/VIDEO_ID
+        else if (preg_match('/\/embed\/([^?&\/]+)/', $url, $matches)) {
+            return $matches[1];
+        }
+        
+        return null;
     }
 
     public function getMapRecord($mapName) {

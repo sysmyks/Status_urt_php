@@ -55,6 +55,9 @@ class StatusParser {
     private function convertColorCodes($text) {
         if (empty($text)) return '';
         
+        // Échapper d'abord tous les caractères HTML spéciaux
+        $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+        
         $colors = [
             '^1' => '<span style="color: #FF0000;">',
             '^2' => '<span style="color: #00FF00;">',
@@ -70,7 +73,9 @@ class StatusParser {
 
         $result = $text;
         foreach ($colors as $code => $html) {
-            $result = str_replace($code, $html, $result);
+            // Remplacer les codes de couleur échappés (^1 devient ^1)
+            $escapedCode = htmlspecialchars($code, ENT_QUOTES, 'UTF-8');
+            $result = str_replace($escapedCode, $html, $result);
         }
         
         // Fermer tous les spans
